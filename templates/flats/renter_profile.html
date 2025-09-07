@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ renter.full_name }} - Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">{{ renter.full_name }} - Profile</h2>
+            {% if user.user_type == 'owner' %}
+                <a href="{% url 'rents:manage_rent' renter.id %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                    Manage Rent
+                </a>
+            {% endif %}
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Personal Information -->
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-800 mb-3">Personal Information</h3>
+                <div class="space-y-2">
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Full Name:</span>
+                        <p class="text-sm">{{ renter.full_name }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Phone:</span>
+                        <p class="text-sm">{{ renter.phone_number }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Email:</span>
+                        <p class="text-sm">{{ renter.email }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Flat Information -->
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-green-800 mb-3">Flat Information</h3>
+                <div class="space-y-2">
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Flat Number:</span>
+                        <p class="text-sm">{{ renter.flat.flat_number }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Floor:</span>
+                        <p class="text-sm">{{ renter.flat.floor }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Number of People:</span>
+                        <p class="text-sm">{{ renter.number_of_people }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Monthly Rent:</span>
+                        <p class="text-sm font-semibold">₹{{ renter.monthly_rent }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Identity Information -->
+            <div class="bg-yellow-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-yellow-800 mb-3">Identity Information</h3>
+                <div class="space-y-2">
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Aadhar Number:</span>
+                        <p class="text-sm">{{ renter.aadhar_number }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">PAN Number:</span>
+                        <p class="text-sm">{{ renter.pan_number }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-600">Joined Date:</span>
+                        <p class="text-sm">{{ renter.created_at|date:"d M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Documents Section -->
+    {% if user.user_type == 'owner' %}
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4">Uploaded Documents</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="border rounded-lg p-4">
+                <h4 class="font-medium mb-2">Aadhar Document</h4>
+                {% if renter.aadhar_document %}
+                    <a href="{{ renter.aadhar_document.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
+                        View Document
+                    </a>
+                {% else %}
+                    <p class="text-gray-500 text-sm">Not uploaded</p>
+                {% endif %}
+            </div>
+            <div class="border rounded-lg p-4">
+                <h4 class="font-medium mb-2">PAN Document</h4>
+                {% if renter.pan_document %}
+                    <a href="{{ renter.pan_document.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
+                        View Document
+                    </a>
+                {% else %}
+                    <p class="text-gray-500 text-sm">Not uploaded</p>
+                {% endif %}
+            </div>
+            <div class="border rounded-lg p-4">
+                <h4 class="font-medium mb-2">Other Documents</h4>
+                {% if renter.other_documents %}
+                    <a href="{{ renter.other_documents.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
+                        View Document
+                    </a>
+                {% else %}
+                    <p class="text-gray-500 text-sm">Not uploaded</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Rent History -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Rent History</h3>
+            {% if user.user_type == 'owner' %}
+                <a href="{% url 'rents:manage_rent' renter.id %}" class="text-blue-600 hover:text-blue-800 text-sm">
+                    Add New Record
+                </a>
+            {% endif %}
+        </div>
+        
+        {% if renter.rent_records.all %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rent</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Electricity Units</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Electricity Bill</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Received</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Remaining</th>
+                            {% if user.user_type == 'owner' %}
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for record in renter.rent_records.all %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 text-sm">{{ record.month|date:"M Y" }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ record.monthly_rent }}</td>
+                            <td class="px-4 py-2 text-sm">{{ record.electricity_units }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ record.electricity_bill }}</td>
+                            <td class="px-4 py-2 text-sm font-medium">₹{{ record.total_rent }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ record.rent_received }}</td>
+                            <td class="px-4 py-2 text-sm {% if record.remaining_rent > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                ₹{{ record.remaining_rent }}
+                            </td>
+                            {% if user.user_type == 'owner' %}
+                            <td class="px-4 py-2 text-sm">
+                                <a href="{% url 'rents:edit_rent' record.id %}" class="text-blue-600 hover:text-blue-800">Edit</a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No rent records found.</p>
+        {% endif %}
+    </div>
+    
+    <div class="mt-6 text-center">
+        <a href="{% url 'accounts:dashboard' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

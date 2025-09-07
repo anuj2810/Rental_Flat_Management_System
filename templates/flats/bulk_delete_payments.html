@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Bulk Delete Duplicate Payments - {{ rent_record.flat.flat_number }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold">Bulk Delete Duplicate Payments</h2>
+        <p class="text-gray-600">Flat {{ rent_record.flat.flat_number }} • {{ rent_record.month|date:"F Y" }}</p>
+    </div>
+    
+    <!-- Warning Message -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">Warning</h3>
+                <div class="mt-2 text-sm text-red-700">
+                    <p>This action will permanently delete the selected duplicate payments. This cannot be undone.</p>
+                    <p class="mt-1">Make sure to review each payment carefully before deletion.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if duplicate_groups %}
+        <form method="post" id="bulkDeleteForm">
+            {% csrf_token %}
+            
+            {% for group in duplicate_groups %}
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-lg font-semibold mb-4">
+                    Duplicate Group: ₹{{ group.amount }} on {{ group.date|date:"d M Y" }}
+                    <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-sm ml-2">{{ group.count }} payments</span>
+                </h3>
+                
+                <div class="space-y-3">
+                    {% for payment in group.payments %}
+                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <input type="checkbox" name="payment_ids" value="{{ payment.id }}" 
+                                   class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+                            <div>
+                                <p class="font-medium">₹{{ payment.amount_received }}</p>
+                                <p class="text-sm text-gray-600">{{ payment.get_payment_method_display }} • {{ payment.payment_by }}</p>
+                                <p class="text-xs text-gray-500">{{ payment.payment_date|date:"d/m/Y H:i" }}</p>
+                                {% if payment.notes %}
+                                    <p class="text-xs text-gray-500 mt-1">{{ payment.notes|truncatechars:50 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            ID: {{ payment.id }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="flex justify-between items-center">
+                <a href="{% url 'flats:payment_history' rent_record.id %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded" 
+                        onclick="return confirm('Are you sure you want to delete the selected payments? This action cannot be undone.')">
+                    Delete Selected Payments
+                </button>
+            </div>
+        </form>
+    {% else %}
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="text-green-600 text-lg font-semibold mb-2">✓ No Duplicate Payments Found</div>
+            <p class="text-gray-600 mb-4">All payments for this month are unique.</p>
+            <a href="{% url 'flats:payment_history' rent_record.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded">
+                Back to Payment History
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('bulkDeleteForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Update submit button state based on selected checkboxes
+    function updateSubmitButton() {
+        const checkedBoxes = form.querySelectorAll('input[name="payment_ids"]:checked');
+        submitBtn.disabled = checkedBoxes.length === 0;
+        submitBtn.textContent = checkedBoxes.length > 0 
+            ? `Delete ${checkedBoxes.length} Selected Payment${checkedBoxes.length > 1 ? 's' : ''}`
+            : 'Delete Selected Payments';
+    }
+    
+    // Add event listeners to all checkboxes
+    form.querySelectorAll('input[name="payment_ids"]').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSubmitButton);
+    });
+    
+    // Initial state
+    updateSubmitButton();
+});
+</script>
+{% endblock %}

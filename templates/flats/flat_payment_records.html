@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Payment Records - Flat {{ flat.flat_number }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold">Payment Records - Flat {{ flat.flat_number }}</h2>
+            <p class="text-gray-600">Complete payment history for this flat</p>
+        </div>
+        <div class="flex space-x-3">
+            {% if user.user_type == 'owner' %}
+                <a href="{% url 'flats:manage_rent' flat.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                    Add Rent
+                </a>
+            {% endif %}
+            <a href="{% url 'flats:payment_summary' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Back to Summary
+            </a>
+        </div>
+    </div>
+    
+    <!-- Flat Information Card -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Flat Number</h3>
+                <p class="text-lg font-semibold">{{ flat.flat_number }}</p>
+            </div>
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Floor</h3>
+                <p class="text-lg font-semibold">{{ flat.floor }}</p>
+            </div>
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Current Tenant</h3>
+                <p class="text-lg font-semibold">{{ flat.tenant_name|default:" Occupied" }}</p>
+            </div>
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Monthly Rent</h3>
+                <p class="text-lg font-semibold">₹{{ flat.monthly_rent }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Statistics -->
+    <div class="grid grid-cols-3 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-blue-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-blue-800">Total Rent Amount</h3>
+            <p class="text-2xl font-bold text-blue-600">₹{{ payment_stats.total_rent }}</p>
+        </div>
+        
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-green-800">Total Received</h3>
+            <p class="text-2xl font-bold text-green-600">₹{{ payment_stats.total_received }}</p>
+        </div>
+        
+        <div class="bg-red-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-red-800">Total Pending</h3>
+            <p class="text-2xl font-bold text-red-600">₹{{ payment_stats.total_pending }}</p>
+        </div>
+    </div>
+    
+    <!-- Rent Records Table -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 class="text-lg font-semibold mb-4">Rent Records</h3>
+        
+        {% if rent_records %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Monthly Rent</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Electricity</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Rent</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Received</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Remaining</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for record in rent_records %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 text-sm">{{ record.month|date:"M Y" }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ record.monthly_rent }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ record.electricity_bill }}</td>
+                            <td class="px-4 py-2 text-sm font-medium">₹{{ record.total_rent }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ record.total_received }}</td>
+                            <td class="px-4 py-2 text-sm {% if record.remaining_rent > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                ₹{{ record.remaining_rent }}
+                            </td>
+                            <td class="px-4 py-2 text-sm">
+                                {% if record.payment_status == 'paid' %}
+                                    <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Paid</span>
+                                {% elif record.payment_status == 'partial' %}
+                                    <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">Partial</span>
+                                {% else %}
+                                    <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">Unpaid</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-sm">
+                                <div class="flex space-x-2">
+                                    {% if record.payment_status != 'paid' %}
+                                        <a href="{% url 'flats:add_payment' record.id %}" class="text-blue-600 hover:text-blue-900">Add Payment</a>
+                                    {% endif %}
+                                    <a href="{% url 'flats:delete_rent' record.id %}" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this rent record?');">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No rent records found for this flat.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Payment History Table -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Payment History</h3>
+        
+        {% if payments %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Payment Method</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Paid By</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for payment in payments %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 text-sm">{{ payment.payment_date|date:"d/m/Y H:i" }}</td>
+                            <td class="px-4 py-2 text-sm">{{ payment.rent_record.month|date:"M Y" }}</td>
+                            <td class="px-4 py-2 text-sm font-medium">₹{{ payment.amount_received }}</td>
+                            <td class="px-4 py-2 text-sm">{{ payment.get_payment_method_display }}</td>
+                            <td class="px-4 py-2 text-sm">{{ payment.payment_by }}</td>
+                            <td class="px-4 py-2 text-sm">{{ payment.notes|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No payment history found for this flat.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

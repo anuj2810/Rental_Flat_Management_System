@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Comprehensive Payment Summary{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold">Comprehensive Payment Summary</h2>
+        <p class="text-gray-600">Complete overview of all payments across all months</p>
+    </div>
+    
+    <!-- Overall Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-blue-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-blue-800">Total Flats</h3>
+            <p class="text-2xl font-bold text-blue-600">{{ comprehensive_stats.total_flats }}</p>
+        </div>
+        
+        <div class="bg-purple-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-purple-800">Total Rent Records</h3>
+            <p class="text-2xl font-bold text-purple-600">{{ comprehensive_stats.total_rent_records }}</p>
+        </div>
+        
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-green-800">Total Received</h3>
+            <p class="text-2xl font-bold text-green-600">₹{{ comprehensive_stats.total_received_amount }}</p>
+        </div>
+        
+        <div class="bg-red-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-red-800">Total Pending</h3>
+            <p class="text-2xl font-bold text-red-600">₹{{ comprehensive_stats.total_pending_amount }}</p>
+        </div>
+    </div>
+    
+    <!-- Payment Status Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-green-800">Fully Paid Records</h3>
+            <p class="text-2xl font-bold text-green-600">{{ comprehensive_stats.paid_records }}</p>
+        </div>
+        
+        <div class="bg-yellow-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-yellow-800">Partially Paid Records</h3>
+            <p class="text-2xl font-bold text-yellow-600">{{ comprehensive_stats.partial_records }}</p>
+        </div>
+        
+        <div class="bg-red-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-red-800">Unpaid Records</h3>
+            <p class="text-2xl font-bold text-red-600">{{ comprehensive_stats.unpaid_records }}</p>
+        </div>
+    </div>
+    
+    <!-- Flat-wise Details -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Flat-wise Payment Summary</h3>
+        
+        {% if flat_details %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Flat Number</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Floor</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rent Records</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Rent</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Received</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Pending</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for detail in flat_details %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 text-sm font-medium">
+                                <a href="{% url 'flats:flat_detail' detail.flat.id %}" class="text-blue-600 hover:text-blue-900">
+                                    {{ detail.flat.flat_number }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-2 text-sm">{{ detail.flat.floor }}</td>
+                            <td class="px-4 py-2 text-sm">{{ detail.rent_records_count }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ detail.total_rent }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ detail.total_received }}</td>
+                            <td class="px-4 py-2 text-sm {% if detail.total_pending > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                ₹{{ detail.total_pending }}
+                            </td>
+                            <td class="px-4 py-2 text-sm space-x-2">
+                                <a href="{% url 'flats:manage_rent' detail.flat.id %}" class="text-blue-600 hover:text-blue-900">Manage</a>
+                                <a href="{% url 'flats:flat_detail' detail.flat.id %}" class="text-green-600 hover:text-green-900">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No flats found.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Detailed Rent Records -->
+    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Detailed Rent Records</h3>
+        
+        {% for detail in flat_details %}
+            {% if detail.rent_records %}
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-800 mb-2">Flat {{ detail.flat.flat_number }}</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto text-sm">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Monthly Rent</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Electricity</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Rent</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Received</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Remaining</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for record in detail.rent_records %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-3 py-2">{{ record.month|date:"M Y" }}</td>
+                                <td class="px-3 py-2">₹{{ record.monthly_rent }}</td>
+                                <td class="px-3 py-2">₹{{ record.electricity_bill }}</td>
+                                <td class="px-3 py-2 font-medium">₹{{ record.total_rent }}</td>
+                                <td class="px-3 py-2">₹{{ record.total_received }}</td>
+                                <td class="px-3 py-2 {% if record.remaining_rent > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                    ₹{{ record.remaining_rent }}
+                                </td>
+                                <td class="px-3 py-2">
+                                    {% if record.payment_status == 'paid' %}
+                                        <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Paid</span>
+                                    {% elif record.payment_status == 'partial' %}
+                                        <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">Partial</span>
+                                    {% else %}
+                                        <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">Unpaid</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <div class="mt-6 text-center space-x-4">
+        <a href="{% url 'flats:payment_summary' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded">
+            Current Month Summary
+        </a>
+        <a href="{% url 'accounts:dashboard' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

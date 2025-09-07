@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Summary - {{ current_month|date:"F Y" }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold">Payment Summary - {{ current_month|date:"F Y" }}</h2>
+        <p class="text-gray-600">Overview of all renters' payment status</p>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div class="bg-blue-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-blue-800">Total Renters</h3>
+            <p class="text-2xl font-bold text-blue-600">{{ payment_stats.total_renters }}</p>
+        </div>
+        
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-green-800">Fully Paid</h3>
+            <p class="text-2xl font-bold text-green-600">{{ payment_stats.paid_this_month }}</p>
+        </div>
+        
+        <div class="bg-yellow-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-yellow-800">Partially Paid</h3>
+            <p class="text-2xl font-bold text-yellow-600">{{ payment_stats.partial_paid_this_month }}</p>
+        </div>
+        
+        <div class="bg-red-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-red-800">Not Paid</h3>
+            <p class="text-2xl font-bold text-red-600">{{ payment_stats.not_paid_this_month }}</p>
+        </div>
+        
+        <div class="bg-purple-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-purple-800">Total Received</h3>
+            <p class="text-2xl font-bold text-purple-600">₹{{ payment_stats.total_received_this_month }}</p>
+        </div>
+    </div>
+    
+    <!-- Payment Status Table -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Renter Payment Status</h3>
+        
+        {% if renter_payment_status %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Flat</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Flat Number</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Rent</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Received</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Remaining</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Payment Date</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for item in renter_payment_status %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 text-sm font-medium">
+                                <a href="{% url 'flats:flat_detail' item.flat.id %}" class="text-blue-600 hover:text-blue-900">
+                                    {{ item.flat.flat_number }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-2 text-sm">{{ item.flat.flat_number }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ item.total_rent }}</td>
+                            <td class="px-4 py-2 text-sm">₹{{ item.received }}</td>
+                            <td class="px-4 py-2 text-sm {% if item.remaining > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                ₹{{ item.remaining }}
+                            </td>
+                            <td class="px-4 py-2 text-sm">
+                                {% if item.payment_date %}
+                                    {{ item.payment_date|date:"d M Y" }}
+                                {% else %}
+                                    <span class="text-gray-400">Not paid</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-sm">
+                                {% if item.status == 'paid' %}
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Paid</span>
+                                {% elif item.status == 'partial' %}
+                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Partial</span>
+                                {% elif item.status == 'no_record' %}
+                                    <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">No Record</span>
+                                {% else %}
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Not Paid</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-sm">
+                                <a href="{% url 'flats:manage_rent' item.flat.id %}" class="text-blue-600 hover:text-blue-900 mr-2">Manage</a>
+                                <a href="{% url 'flats:flat_detail' item.flat.id %}" class="text-green-600 hover:text-green-900">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No renters found.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Summary Section -->
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-green-800">Total Received This Month</h3>
+            <p class="text-2xl font-bold text-green-600">₹{{ payment_stats.total_received_this_month }}</p>
+        </div>
+        
+        <div class="bg-red-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-red-800">Total Pending This Month</h3>
+            <p class="text-2xl font-bold text-red-600">₹{{ payment_stats.total_pending_this_month }}</p>
+        </div>
+    </div>
+    
+    <div class="mt-6 text-center">
+        <a href="{% url 'accounts:dashboard' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

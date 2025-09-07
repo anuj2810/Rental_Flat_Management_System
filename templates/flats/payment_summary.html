@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Payment Summary - All Time{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold">Payment Summary - All Time</h2>
+        <p class="text-gray-600">Complete overview of all payments across all flats and months</p>
+    </div>
+    
+    <!-- Overall Statistics Cards -->
+    <div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+        <div class="bg-blue-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-blue-800">Total Flats</h3>
+            <p class="text-2xl font-bold text-blue-600">{{ payment_stats.total_flats }}</p>
+        </div>
+        
+        <div class="bg-purple-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-purple-800">Total Rent Records</h3>
+            <p class="text-2xl font-bold text-purple-600">{{ payment_stats.total_rent_records }}</p>
+        </div>
+        
+        <div class="bg-indigo-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-indigo-800">Total Rent</h3>
+            <p class="text-2xl font-bold text-indigo-600">₹{{ payment_stats.total_rent_amount }}</p>
+        </div>
+        
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-green-800">Total Received</h3>
+            <p class="text-2xl font-bold text-green-600">₹{{ payment_stats.total_received_amount }}</p>
+        </div>
+        
+        <div class="bg-red-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-red-800">Total Pending</h3>
+            <p class="text-2xl font-bold text-red-600">₹{{ payment_stats.total_pending_amount }}</p>
+        </div>
+    </div>
+    
+    <!-- Payment Status Summary -->
+    <div class="grid grid-cols-3 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-green-800">Fully Paid Records</h3>
+            <p class="text-2xl font-bold text-green-600">{{ payment_stats.paid_records }}</p>
+        </div>
+        
+        <div class="bg-yellow-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-yellow-800">Partially Paid Records</h3>
+            <p class="text-2xl font-bold text-yellow-600">{{ payment_stats.partial_records }}</p>
+        </div>
+        
+        <div class="bg-red-100 p-4 rounded-lg">
+            <h3 class="font-semibold text-red-800">Unpaid Records</h3>
+            <p class="text-2xl font-bold text-red-600">{{ payment_stats.unpaid_records }}</p>
+        </div>
+    </div>
+    
+    <!-- Flat Cards Grid -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Flat Payment Status</h3>
+        
+        {% if flat_payment_status %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for item in flat_payment_status %}
+                <div class="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                            <h4 class="text-lg font-semibold text-gray-800">Flat {{ item.flat.flat_number }}</h4>
+                            <span class="text-sm text-gray-600">Floor {{ item.flat.floor }}</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="grid grid-cols-4 gap-4 mb-4">
+                                <div>
+                                    <p class="text-sm text-gray-600">Total Rent</p>
+                                    <p class="text-lg font-semibold">₹{{ item.total_rent }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">Records</p>
+                                    <p class="text-lg font-semibold">{{ item.rent_records_count }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">Received</p>
+                                    <p class="text-lg font-semibold text-green-600">₹{{ item.received }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">Pending</p>
+                                    <p class="text-lg font-semibold {% if item.remaining > 0 %}text-red-600{% else %}text-green-600{% endif %}">₹{{ item.remaining }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-sm text-gray-600">Last Payment</p>
+                                    <p class="text-sm">
+                                        {% if item.last_payment_date %}
+                                            {{ item.last_payment_date|date:"d M Y" }}
+                                        {% else %}
+                                            <span class="text-gray-400">Not paid</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="flex space-x-4">
+                                    {% if item.status == 'paid' %}
+                                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Paid</span>
+                                    {% elif item.status == 'partial' %}
+                                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">Partial</span>
+                                    {% else %}
+                                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">Not Paid</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-gray-200 flex justify-between items-center">
+                            <a href="{% url 'flats:flat_payment_records' item.flat.id %}" class="flex items-center">
+                                <span class="text-blue-600 text-sm mr-1">View Payment Records</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No flats found.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Payment Management Hub -->
+    <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Payment Management Hub</h3>
+            <div class="flex space-x-2">
+                
+                <!-- 'View All Flats' link removed -->
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Payment Actions -->
+            <div class="bg-green-50 rounded-lg p-4">
+                <h4 class="font-semibold text-green-800 mb-3">Payment Actions</h4>
+                <div class="space-y-2">
+                    <p class="text-sm text-green-700">Add payments for specific rent records</p>
+                    <p class="text-sm text-green-700">View payment history by flat</p>
+                    <p class="text-sm text-green-700">Edit or delete existing payments</p>
+                    <p class="text-sm text-green-700">Bulk delete duplicate payments</p>
+                </div>
+            </div>
+            
+            <!-- Management Info -->
+            <div class="bg-yellow-50 rounded-lg p-4">
+                <h4 class="font-semibold text-yellow-800 mb-3">Management Info</h4>
+                <div class="space-y-2 text-sm text-yellow-700">
+                    <p><strong>Total Flats:</strong> {{ payment_stats.total_flats }}</p>
+                    <p><strong>Active Records:</strong> {{ payment_stats.total_rent_records }}</p>
+                    <p><strong>Collection Rate:</strong> 
+                        {% if payment_stats.total_rent_amount > 0 %}
+                            {{ payment_stats.total_received_amount|floatformat:0|add:0|div:payment_stats.total_rent_amount|floatformat:1|mul:100 }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="mt-6 bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold text-gray-800 mb-2">How to Manage Payments:</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div>
+                    <p class="font-medium mb-1">1. Add New Payments:</p>
+                    <p>Go to "View All Flats" → Select a flat → Click "Manage Payments" → Add payment for specific rent record</p>
+                </div>
+                <div>
+                    <p class="font-medium mb-1">2. Edit/Delete Payments:</p>
+                    <p>Use the "Recent Payments" section above to edit or delete individual payments</p>
+                </div>
+                <div>
+                    <p class="font-medium mb-1">3. View Payment History:</p>
+                    <p>Go to "View All Flats" → Select a flat → Click "Manage Payments" → View detailed payment history</p>
+                </div>
+                <div>
+                    <p class="font-medium mb-1">4. Manage Duplicates:</p>
+                    <p>Use the "Manage Duplicates" button if duplicate payments are detected</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-6 text-center space-x-4">
+        <a href="{% url 'accounts:dashboard' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

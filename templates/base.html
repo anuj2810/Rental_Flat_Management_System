@@ -1,0 +1,536 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" x-data="{ dark: localStorage.getItem('theme') === 'dark' }" x-cloak>
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <!-- Performance and SEO meta tags -->
+    <meta name="description" content="Professional flat rental management system. Manage properties, tenants, and payments with ease.">
+    <meta name="keywords" content="flat rental, property management, tenant management, rent collection">
+    <meta name="author" content="Flat Rental System">
+    <meta name="robots" content="index, follow">
+
+    <!-- Performance hints -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+
+    <!-- Mobile optimization -->
+    <meta name="theme-color" content="#3B82F6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Flat Rental System">
+
+    <link rel="icon" type="image/ico" href="{% static 'images/favicon.ico' %}">
+    <title>{% block title %} default - Flat Rental Management System{% endblock %}</title>
+    <!-- Local Tailwind CSS (compiled) with performance optimization -->
+    <link rel="preload" href="{% static 'css/tailwind.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{% static 'css/tailwind.css' %}"></noscript>
+    <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive-fixes.css' %}">
+    <link rel="stylesheet" href="{% static 'css/enhanced-styling.css' %}">
+
+    <!-- Preload critical images -->
+    <link rel="preload" href="{% static 'images/building.png' %}" as="image">
+    <script>
+        // Tailwind configuration is now in tailwind.config.js
+        // This script block is kept for theme initialization only
+        // Prevent flash of wrong theme before Alpine loads
+        try {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            // Add a class to indicate theme is initialized
+            document.documentElement.classList.add('theme-initialized');
+        } catch (e) {}
+
+
+    </script>
+    <style>
+        /* Reset and normalize sizing */
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px; /* Base font size */
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        body {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Prevent zoom on mobile inputs */
+        input, select, textarea {
+            font-size: 16px !important;
+        }
+
+        /* Theme variables for smooth, eye-friendly dark mode */
+        :root {
+            --bg: #f8fafc;            /* slate-50 */
+            --surface: #ffffff;       /* white */
+            --muted: #f1f5f9;         /* slate-100 */
+            --text: #0f172a;          /* slate-900 */
+            --text-muted: #475569;    /* slate-600 */
+            --border: #e2e8f0;        /* slate-200 */
+            --accent: #3b82f6;        /* blue-500 */
+        }
+        .dark {
+            --bg: #0f172a;            /* slate-900 */
+            --surface: #111827;       /* gray-900 */
+            --muted: #0b1220;         /* custom deep */
+            --text: #e5e7eb;          /* gray-200 */
+            --text-muted: #cbd5e1;    /* slate-300 */
+            --border: #334155;        /* slate-700 */
+            --accent: #60a5fa;        /* blue-400 */
+        }
+
+        /* Base colors */
+        body { background: var(--bg); color: var(--text); }
+        a { color: inherit; }
+
+        /* Common containers and cards */
+        .bg-white { background-color: var(--surface) !important; }
+        .bg-gray-50 { background-color: var(--muted) !important; }
+        .text-gray-900, .text-gray-800 { color: var(--text) !important; }
+        .text-gray-700, .text-gray-600, .text-gray-500 { color: var(--text-muted) !important; }
+        .border, .border-gray-200, .border-gray-300, .border-gray-700 { border-color: var(--border) !important; }
+
+        /* Tables */
+        table { color: var(--text); }
+        thead { background: var(--muted); }
+        tbody { background: var(--surface); }
+        th, td { border-color: var(--border); }
+
+        /* Forms */
+        input, select, textarea {
+            background: var(--surface) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+            font-size: 16px !important; /* Prevent zoom on mobile */
+        }
+        input::placeholder, textarea::placeholder { color: var(--text-muted) !important; }
+        label { color: var(--text) !important; }
+        :focus { outline-color: var(--accent); }
+        input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px rgb(59 130 246 / 0.35); border-color: var(--accent) !important; }
+
+        /* Alerts/messages */
+        .alert { background-color: var(--muted) !important; border-color: var(--border) !important; color: var(--text) !important; }
+
+        /* Smooth shadows in dark */
+        .dark .shadow-sm, .dark .shadow, .dark .shadow-md { box-shadow: 0 1px 2px 0 rgba(0,0,0,.45)!important; }
+
+        /* Hide Alpine.js elements until initialized */
+        [x-cloak] { display: none !important; }
+
+        /* Smooth theme transition */
+        html.theme-initialized * {
+            transition: background-color 0.5s ease-out, color 0.5s ease-out, border-color 0.5s ease-out, box-shadow 0.5s ease-out;
+        }
+
+        /* Responsive font sizes */
+        @media (max-width: 640px) {
+            html { font-size: 14px; }
+        }
+
+        @media (min-width: 1024px) {
+            html { font-size: 16px; }
+        }
+
+        /* Ensure proper image sizing */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Container responsive control */
+        .container {
+            max-width: 1400px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-100 min-h-screen" x-data="{dark: (localStorage.getItem('theme')||'')==='dark'}" x-init="if(dark){document.documentElement.classList.add('dark')} else {document.documentElement.classList.remove('dark')}" x-bind:class="dark ? 'dark bg-gray-900' : ''" x-cloak>
+    <nav class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 shadow-lg dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo and Brand -->
+                <div class="flex items-center">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:dashboard' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 dark:hover:text-gray-300">
+                    {% else %}
+                        <div class="flex items-center text-white">
+                    {% endif %}
+                        {% comment %} <div class="bg-white bg-opacity-20 p-2 rounded-lg mr-3">
+                            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                            </svg>
+                        </div> {% endcomment %}
+
+                        <!-- Replace SVG container with an image -->
+                        <div class="mr-3">
+                            <img src="{% static 'images/building.png' %}" 
+                                alt="Flat Rental Logo" 
+                                class="w-12 h-12 rounded-full object-cover shadow-md">
+                        </div>
+
+                        <div>
+                            <h1 class="text-xl font-bold">Flat Rental System</h1>
+                            <p class="text-xs text-blue-100">Property Management Made Easy</p>
+                        </div>
+                    {% if user.is_authenticated %}
+                        </a>
+                    {% else %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button & Theme Toggle -->
+                <div class="flex items-center space-x-2 md:hidden" x-data="{ mobileMenuOpen: false }">
+                    <!-- Mobile Menu Button -->
+                    {% if user.is_authenticated %}
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class=" hidden md:hidden text-white hover:text-blue-200 p-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors duration-200">
+                        <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                    {% endif %}
+
+                    <!-- Theme Toggle -->
+                    <button type="button" @click.prevent="dark = !dark; if(dark){document.documentElement.classList.add('dark')} else {document.documentElement.classList.remove('dark')}; localStorage.setItem('theme', dark ? 'dark' : 'light')" class="flex items-center px-2 py-2 rounded-lg bg-gray-800/70 backdrop-blur-sm border border-white/20 text-white hover:bg-white/10 transition shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                        <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-6a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM4 10a1 1 0 01-1 1H2a1 1 0 010-2h1a1 1 0 011 1zm11.657-6.657a1 1 0 010 1.414L15.343 6.07a1 1 0 11-1.414-1.415l1.314-1.312a1 1 0 011.414 0zM6.07 15.343a1 1 0 01-1.414 0l-1.313-1.314a1 1 0 011.414-1.414l1.313 1.314a1 1 0 010 1.414zM17.657 14.243a1 1 0 00-1.414-1.414l-1.314 1.314a1 1 0 101.414 1.414l1.314-1.314zM5.757 5.757a1 1 0 10-1.414-1.414L3.03 5.657a1 1 0 001.414 1.414l1.313-1.314z" />
+                        </svg>
+                        <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M17.293 13.293A8 8 0 016.707 2.707a8 8 0 1010.586 10.586z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+
+                    <!-- Mobile Menu -->
+                    {% if user.is_authenticated %}
+                    <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute top-full left-0 right-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 shadow-lg border-t border-white/20 z-50">
+                        <div class="px-4 py-4 space-y-2">
+                            {% if user.user_type == 'owner' %}
+                                <a href="{% url 'accounts:dashboard' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-3 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                    </svg>
+                                    Dashboard
+                                </a>
+                                <a href="{% url 'flats:manage_flats' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-3 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                                    </svg>
+                                    Manage Flats
+                                </a>
+                                <a href="{% url 'flats:payment_summary' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-3 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                    </svg>
+                                    Payments
+                                </a>
+                            {% else %}
+                                <a href="{% url 'accounts:dashboard' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-3 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                    </svg>
+                                    Dashboard
+                                </a>
+                                <a href="{% url 'rents:renter_rent_history' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-3 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Rent History
+                                </a>
+                            {% endif %}
+                            <div class="border-t border-white/20 pt-3 mt-3">
+                                <a href="{% url 'accounts:profile' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-3 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Profile
+                                </a>
+                                <a href="{% url 'accounts:logout' %}" class="flex items-center text-red-300 hover:text-red-100 transition-colors duration-200 px-3 py-3 rounded-lg hover:bg-red-500 hover:bg-opacity-20">
+                                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Desktop Theme Toggle -->
+                <div class="hidden md:block">
+                    <button type="button" @click.prevent="dark = !dark; if(dark){document.documentElement.classList.add('dark')} else {document.documentElement.classList.remove('dark')}; localStorage.setItem('theme', dark ? 'dark' : 'light')" class="flex items-center px-3 py-2 rounded-lg bg-gray-800/70 backdrop-blur-sm border border-white/20 text-white hover:bg-white/10 transition shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                        <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-6a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM4 10a1 1 0 01-1 1H2a1 1 0 010-2h1a1 1 0 011 1zm11.657-6.657a1 1 0 010 1.414L15.343 6.07a1 1 0 11-1.414-1.415l1.314-1.312a1 1 0 011.414 0zM6.07 15.343a1 1 0 01-1.414 0l-1.313-1.314a1 1 0 011.414-1.414l1.313 1.314a1 1 0 010 1.414zM17.657 14.243a1 1 0 00-1.414-1.414l-1.314 1.314a1 1 0 101.414 1.414l1.314-1.314zM5.757 5.757a1 1 0 10-1.414-1.414L3.03 5.657a1 1 0 001.414 1.414l1.313-1.314z" />
+                        </svg>
+                        <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M17.293 13.293A8 8 0 016.707 2.707a8 8 0 1010.586 10.586z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Navigation Menu -->
+                {% if user.is_authenticated %}
+                    <div class="hidden md:flex items-center space-x-6">
+                        {% if user.user_type == 'owner' %}
+                            <a href="{% url 'accounts:dashboard' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                                Dashboard
+                            </a>
+                            <a href="{% url 'flats:manage_flats' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                                </svg>
+                                Flats
+                            </a>
+                            <a href="{% url 'flats:payment_summary' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                                Payments
+                            </a>
+                        {% else %}
+                            <a href="{% url 'accounts:dashboard' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                                Dashboard
+                            </a>
+                            <a href="{% url 'rents:renter_rent_history' %}" class="flex items-center text-white hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                </svg>
+                                Rent History
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-4">
+                        <div class="hidden md:flex items-center space-x-3">
+                            <div class="text-right">
+                                <div class="text-white font-medium">{{ user.first_name|default:user.username }}</div>
+                                <div class="text-blue-200 text-xs">{{ user.user_type|capfirst }}</div>
+                            </div>
+                            <a href="{% url 'accounts:profile' %}" class="block">
+                            {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" alt="Profile" class="w-10 h-10 rounded-full object-cover border border-white/20">
+                            {% else %}
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                                <span class="text-white font-semibold">{{ user.first_name|first|default:user.username|first|upper }}</span>
+                            </div>
+                            {% endif %}
+                            </a>
+                        </div>
+                        <a href="{% url 'accounts:logout' %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'accounts:login' %}" class="text-white hover:text-blue-200 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-10">Login</a>
+                        <a href="{% url 'accounts:signup' %}" class="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors duration-200 font-medium">Sign Up</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto py-6 px-4 lg:px-6">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} bg-{% if message.tags == 'error' %}red{% else %}green{% endif %}-100 border border-{% if message.tags == 'error' %}red{% else %}green{% endif %}-400 text-{% if message.tags == 'error' %}red{% else %}green{% endif %}-700 px-4 py-3 rounded mb-4 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Beautiful Footer -->
+    <footer class="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 text-white mt-16 dark:from-gray-950 dark:via-gray-900 dark:to-black">
+        <div class="container mx-auto px-4 pt-8 pb-4">
+            
+            <!-- Main Footer Section: Company Info | Quick Links | Contact Info -->
+            <div class="grid grid-cols-3 gap-4 md:gap-8 items-start">
+                <!-- Company Info (Left) -->
+                <div class="flex flex-col h-full mx-8 mr-16  ">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gradient-to-r from-blue-400 to-purple-500 p-3 rounded-lg mr-3">
+                            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold">Flat Rental System</h3>
+                    </div>
+                    <p class="text-gray-300 mb-4 leading-relaxed">
+                        Streamline your rental property management with our comprehensive solution.
+                        Track tenants, manage payments, and organize your properties all in one place.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-blue-600 hover:bg-blue-700 p-2 rounded-full transition-colors duration-200">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-blue-800 hover:bg-blue-900 p-2 rounded-full transition-colors duration-200">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-purple-600 hover:bg-purple-700 p-2 rounded-full transition-colors duration-200">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links (Middle) -->
+                <div class="flex flex-col h-full px-6 ">
+                    <h4 class="text-lg font-semibold mb-4 px-4 text-blue-300">Quick Links</h4>
+                    <ul class="space-y-2">
+                        {% if user.is_authenticated %}
+                            {% if user.user_type == 'owner' %}
+                                <li><a href="{% url 'accounts:dashboard' %}" class="text-gray-300 px-4 hover:text-white transition-colors duration-200 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                    </svg>
+                                    Dashboard
+                                </a></li>
+                                <li><a href="{% url 'flats:add_flat' %}" class="text-gray-300 px-4 hover:text-white transition-colors duration-200 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Add Flat
+                                </a></li>
+                                <li><a href="{% url 'flats:manage_flats' %}" class="text-gray-300 px-4 hover:text-white transition-colors duration-200 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Manage Flats
+                                </a></li>
+                                <li><a href="{% url 'flats:payment_summary' %}" class="text-gray-300 px-4 hover:text-white transition-colors duration-200 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                    </svg>
+                                    Payments
+                                </a></li>
+                            {% else %}
+                                <li><a href="{% url 'accounts:dashboard' %}" class="text-gray-300 px-4 hover:text-white transition-colors duration-200 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                    </svg>
+                                    Dashboard
+                                </a></li>
+                                <li><a href="{% url 'rents:renter_rent_history' %}" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Rent History
+                                </a></li>
+                            {% endif %}
+                        {% else %}
+                            <li><a href="{% url 'accounts:login' %}" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Login
+                            </a></li>
+                            <li><a href="{% url 'accounts:signup' %}" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                                </svg>
+                                Sign Up
+                            </a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Contact Info (Right) -->
+                <div class="flex flex-col h-full px-4 ">
+                    <h4 class="text-lg font-semibold mb-4 text-purple-300 px-4 ">Contact Info</h4>
+                    <ul class="space-y-3 px-4">
+                        <li class="flex items-center text-gray-300">
+                            <svg class="w-5 h-5 mr-3 text-blue-400 " fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>
+                                {% if footer_contact.name %}
+                                    {{ footer_contact.name }}<br>
+                                {% endif %}
+                                {% if footer_contact.username %}
+                                    Owner: @{{ footer_contact.username }}
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li class="flex items-center text-gray-300">
+                            <svg class="w-5 h-5 mr-3 text-green-400 " fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                            </svg>
+                            <span>
+                                {% if footer_contact.phone %}
+                                    {{ footer_contact.phone }}
+                                {% else %}
+                                    +1 (555) 123-4567
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li class="flex items-center text-gray-300 ">
+                            <svg class="w-5 h-5 mr-3 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                            </svg>
+                            <span>
+                                {% if footer_contact.email %}
+                                    {{ footer_contact.email }}
+                                {% else %}
+                                    info@flatrental.com
+                                {% endif %}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-700 mt-8 pt-4 pb-2">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                        © 2025 Flat Rental System. All rights reserved. Built with ❤️ using Django & TailwindCSS.
+                    </div>
+                    <div class="flex space-x-6 text-sm">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Privacy Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Terms of Service</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Support</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

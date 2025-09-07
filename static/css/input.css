@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles to ensure exact same behavior as CDN */
+@layer base {
+  html {
+    font-size: 16px;
+  }
+  
+  body {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  /* Add any custom component styles here if needed */
+}
+
+/* Custom utility styles */
+@layer utilities {
+  /* Add any custom utility styles here if needed */
+}

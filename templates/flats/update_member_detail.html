@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Member - {{ member.full_name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Update Member Details</h1>
+            <div>
+                <a href="{% url 'flats:view_member_detail' member.id %}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded">
+                    Cancel
+                </a>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Personal Information</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="{{ form.full_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.full_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.phone_number.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.aadhar_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Aadhar Number</label>
+                        {{ form.aadhar_number }}
+                        {% if form.aadhar_number.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.aadhar_number.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.pan_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
+                        {{ form.pan_number }}
+                        {% if form.pan_number.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.pan_number.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Documents</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="{{ form.aadhar_document.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Aadhar Document</label>
+                        {% if member.aadhar_document %}
+                            <p class="text-sm text-gray-500 mb-2">Current: <a href="{{ member.aadhar_document.url }}" target="_blank" class="text-blue-500 hover:underline">View Document</a></p>
+                        {% endif %}
+                        {{ form.aadhar_document }}
+                        {% if form.aadhar_document.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.aadhar_document.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.pan_document.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">PAN Document</label>
+                        {% if member.pan_document %}
+                            <p class="text-sm text-gray-500 mb-2">Current: <a href="{{ member.pan_document.url }}" target="_blank" class="text-blue-500 hover:underline">View Document</a></p>
+                        {% endif %}
+                        {{ form.pan_document }}
+                        {% if form.pan_document.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.pan_document.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group col-span-2">
+                        <label for="{{ form.other_documents.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Other Documents</label>
+                        {% if member.other_documents %}
+                            <p class="text-sm text-gray-500 mb-2">Current: <a href="{{ member.other_documents.url }}" target="_blank" class="text-blue-500 hover:underline">View Document</a></p>
+                        {% endif %}
+                        {{ form.other_documents }}
+                        {% if form.other_documents.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.other_documents.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Additional Information</h2>
+                
+                <div class="form-group">
+                    <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ form.notes.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded font-medium">
+                    Update Member
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

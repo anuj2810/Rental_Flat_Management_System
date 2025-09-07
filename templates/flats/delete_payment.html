@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Payment - {{ rent_record.flat.flat_number }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Delete Payment</h2>
+            <a href="{% url 'flats:manage_rent' rent_record.flat.id %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Back to Rent Management</a>
+        </div>
+
+        <!-- Payment Details -->
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-red-800 mb-2">Payment Details</h3>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="font-medium">Flat:</span> {{ rent_record.flat.flat_number }}
+                </div>
+                <div>
+                    <span class="font-medium">Month:</span> {{ rent_record.month|date:"F Y" }}
+                </div>
+                <div>
+                    <span class="font-medium">Amount:</span> ₹{{ payment.amount_received }}
+                </div>
+                <div>
+                    <span class="font-medium">Payment Method:</span> {{ payment.get_payment_method_display }}
+                </div>
+                <div>
+                    <span class="font-medium">Payment By:</span> {{ payment.payment_by }}
+                </div>
+                <div>
+                    <span class="font-medium">Payment Date:</span> {{ payment.payment_date|date:"d/m/Y H:i" }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Warning Message -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-yellow-800">Warning</h3>
+                    <div class="mt-2 text-sm text-yellow-700">
+                        <p>Are you sure you want to delete this payment? This action cannot be undone.</p>
+                        <p class="mt-1">After deletion, the remaining rent for this month will be ₹{{ payment.amount_received }} more.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="flex justify-end space-x-3 pt-4">
+                <a href="{% url 'flats:manage_rent' rent_record.flat.id %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded">
+                    Delete Payment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

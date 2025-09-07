@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Flat {{ flat.flat_number }} {% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-4">
+        {% if user.user_type == 'owner' and flat.owner == user %}
+            <a href="{% url 'flats:manage_flats' %}" class="inline-flex items-center text-gray-600 hover:text-gray-800">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Manage Flats
+            </a>
+        {% else %}
+            <a href="{% url 'accounts:dashboard' %}" class="inline-flex items-center text-gray-600 hover:text-gray-800">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Manage Flats
+                </a>
+        {% endif %}
+    </div>
+
+    <!-- Flat Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-start">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800">Flat {{ flat.flat_number }}</h2>
+                <p class="text-gray-600">Floor {{ flat.floor }} • Monthly Rent: ₹{{ flat.monthly_rent }}</p>
+                <p class="text-sm text-gray-500">Created: {{ flat.created_at|date:"d M Y" }}</p>
+            </div>
+            <div class="flex space-x-3">
+                {% if user.user_type == 'owner' and flat.owner == user %}
+                    <a href="{% url 'flats:add_flat_member' flat.id %}" class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded">
+                        Add Member
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Flat Members Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Flat Members ({{ members.count }})</h3>
+            {% if user.user_type == 'owner' and flat.owner == user %}
+                <a href="{% url 'flats:add_flat_member' flat.id %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm">
+                    Add Member
+                </a>
+            {% endif %}
+        </div>
+        
+        {% if members %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for member in members %}
+                <div class="border rounded-lg p-4 {% if member.is_main_renter %}bg-blue-50 border-blue-200{% else %}bg-gray-50 border-gray-200{% endif %}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold text-lg">{{ member.full_name }}</h4>
+                            {% if member.is_main_renter %}
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Main Renter</span>
+                            {% endif %}
+                        </div>
+                        {% if member.user %}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Has Login</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-3 space-y-1 text-sm text-gray-600">
+                        <p><strong>Phone:</strong> {{ member.phone_number }}</p>
+                        <p><strong>Email:</strong> {{ member.email }}</p>
+                        <p><strong>Aadhar:</strong> {{ member.aadhar_number }}</p>
+                        <p><strong>PAN:</strong> {{ member.pan_number }}</p>
+                        <p><strong>Added:</strong> {{ member.created_at|date:"d M Y" }}</p>
+                    </div>
+                    
+                    {% if member.aadhar_document or member.pan_document or member.other_documents %}
+                    <div class="mt-3">
+                        <p class="text-sm font-semibold text-gray-700">Documents:</p>
+                        <div class="flex flex-wrap gap-2 mt-1">
+                            {% if member.aadhar_document %}
+                                <a href="{{ member.aadhar_document.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs bg-blue-100 px-2 py-1 rounded">Aadhar</a>
+                            {% endif %}
+                            {% if member.pan_document %}
+                                <a href="{{ member.pan_document.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs bg-blue-100 px-2 py-1 rounded">PAN</a>
+                            {% endif %}
+                            {% if member.other_documents %}
+                                <a href="{{ member.other_documents.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs bg-blue-100 px-2 py-1 rounded">Other</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if user.user_type == 'owner' and flat.owner == user %}
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+                        <a href="{% url 'flats:view_member_detail' member.id %}" class="inline-flex items-center justify-center px-3 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                            View Details
+                        </a>
+                        <a href="{% url 'flats:update_member_detail' member.id %}" class="inline-flex items-center justify-center px-3 py-2 text-sm rounded-lg bg-orange-600 text-white hover:bg-orange-700 transition">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.414 2.586a2 2 0 010 2.828l-9.9 9.9a2 2 0 01-.878.506l-3.182.795a.5.5 0 01-.606-.606l.795-3.182a2 2 0 01.506-.878l9.9-9.9a2 2 0 012.828 0z" />
+                                <path fill-rule="evenodd" d="M2 15.25V18h2.75l8.486-8.486-2.75-2.75L2 15.25z" clip-rule="evenodd" />
+                            </svg>
+                            Update Details
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No members added yet.</p>
+        {% endif %}
+    </div>
+
+
+
+
+</div>
+{% endblock %}

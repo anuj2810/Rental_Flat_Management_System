@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Rent - Flat {{ flat.flat_number }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold">Manage Rent - Flat {{ flat.flat_number }}</h2>
+        <p class="text-gray-600">Floor {{ flat.floor }} • Monthly Rent: ₹{{ flat.monthly_rent }}</p>
+    </div>
+    
+    <!-- Add New Rent Record -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4">Add New Rent Record</h3>
+        
+        <form method="post" class="flex flex-col space-y-4 max-w-md mx-auto">
+            {% csrf_token %}
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Month</label>
+                {{ form.month }}
+                {% if form.month.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ form.month.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Monthly Rent (₹)</label>
+                {{ form.monthly_rent }}
+                {% if form.monthly_rent.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ form.monthly_rent.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Electricity Units</label>
+                {{ form.electricity_units }}
+                {% if form.electricity_units.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ form.electricity_units.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Electricity Rate (₹/unit)</label>
+                {{ form.electricity_rate }}
+                {% if form.electricity_rate.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ form.electricity_rate.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded w-full">
+                    Save Rent Record
+                </button>
+            </div>
+        </form>
+    </div>
+    
+
+    
+    <div class="mt-6 text-center">
+        <a href="{% url 'flats:flat_payment_records' flat.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded  flex items-center justify-center max-w-xs mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Back to Payment Records
+        </a>
+        <a href="{% url 'accounts:dashboard' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mt-2 flex items-center justify-center max-w-xs mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const unitsInput = document.querySelector('input[name="electricity_units"]');
+    const rateInput = document.querySelector('input[name="electricity_rate"]');
+    const rentInput = document.querySelector('input[name="monthly_rent"]');
+    
+    function updateCalculations() {
+        const units = parseFloat(unitsInput.value) || 0;
+        const rate = parseFloat(rateInput.value) || 8;
+        const rent = parseFloat(rentInput.value) || 0;
+        
+        const electricityBill = units * rate;
+        const totalRent = rent + electricityBill;
+        
+        // You could add display elements to show calculated values
+        console.log('Electricity Bill:', electricityBill);
+        console.log('Total Rent:', totalRent);
+    }
+    
+    if (unitsInput) unitsInput.addEventListener('input', updateCalculations);
+    if (rateInput) rateInput.addEventListener('input', updateCalculations);
+    if (rentInput) rentInput.addEventListener('input', updateCalculations);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,435 @@
+/* Responsive Fixes for Proper Sizing */
+
+/* CSS Reset for consistent sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Reset and base sizing */
+html {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100% !important;
+    -ms-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    zoom: 1 !important;
+    height: 100%;
+}
+
+body {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    zoom: 1 !important;
+    transform: scale(1) !important;
+    -webkit-transform: scale(1) !important;
+    -moz-transform: scale(1) !important;
+    -ms-transform: scale(1) !important;
+    -o-transform: scale(1) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    min-height: 100vh;
+}
+
+/* Navigation bar sizing fixes */
+nav {
+    font-size: 1rem !important;
+}
+
+nav h1 {
+    font-size: 1.25rem !important; /* text-xl */
+}
+
+nav .text-xs {
+    font-size: 0.75rem !important;
+}
+
+nav img {
+    width: 3rem !important; /* w-12 */
+    height: 3rem !important; /* h-12 */
+}
+
+/* Button sizing fixes */
+button, .btn {
+    font-size: 0.875rem !important; /* text-sm */
+    padding: 0.5rem 1rem !important;
+}
+
+/* Form element sizing */
+input, select, textarea {
+    font-size: 1rem !important;
+    padding: 0.75rem !important;
+}
+
+/* Text sizing fixes */
+.text-xs { font-size: 0.75rem !important; }
+.text-sm { font-size: 0.875rem !important; }
+.text-base { font-size: 1rem !important; }
+.text-lg { font-size: 1.125rem !important; }
+.text-xl { font-size: 1.25rem !important; }
+.text-2xl { font-size: 1.5rem !important; }
+.text-3xl { font-size: 1.875rem !important; }
+.text-4xl { font-size: 2.25rem !important; }
+
+/* Icon sizing fixes */
+.w-4 { width: 1rem !important; }
+.h-4 { height: 1rem !important; }
+.w-5 { width: 1.25rem !important; }
+.h-5 { height: 1.25rem !important; }
+.w-6 { width: 1.5rem !important; }
+.h-6 { height: 1.5rem !important; }
+.w-8 { width: 2rem !important; }
+.h-8 { height: 2rem !important; }
+.w-12 { width: 3rem !important; }
+.h-12 { height: 3rem !important; }
+.w-16 { width: 4rem !important; }
+.h-16 { height: 4rem !important; }
+
+/* Padding and margin fixes */
+.p-1 { padding: 0.25rem !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 0.75rem !important; }
+.p-4 { padding: 1rem !important; }
+.p-5 { padding: 1.25rem !important; }
+.p-6 { padding: 1.5rem !important; }
+.p-8 { padding: 2rem !important; }
+
+.px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+.px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+
+.py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+.py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+.py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.py-6 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+
+/* Margin fixes */
+.m-1 { margin: 0.25rem !important; }
+.m-2 { margin: 0.5rem !important; }
+.m-3 { margin: 0.75rem !important; }
+.m-4 { margin: 1rem !important; }
+.m-6 { margin: 1.5rem !important; }
+.m-8 { margin: 2rem !important; }
+
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-4 { margin-bottom: 1rem !important; }
+.mb-6 { margin-bottom: 1.5rem !important; }
+.mb-8 { margin-bottom: 2rem !important; }
+
+.mt-4 { margin-top: 1rem !important; }
+.mt-6 { margin-top: 1.5rem !important; }
+.mt-8 { margin-top: 2rem !important; }
+
+.ml-3 { margin-left: 0.75rem !important; }
+.ml-4 { margin-left: 1rem !important; }
+
+.mr-3 { margin-right: 0.75rem !important; }
+
+/* Container responsive sizing */
+.container {
+    max-width: 1400px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Card sizing */
+.rounded-lg {
+    border-radius: 0.5rem !important;
+}
+
+.rounded-xl {
+    border-radius: 0.75rem !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Grid fixes */
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+
+.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.gap-4 {
+    gap: 1rem !important;
+}
+
+.gap-6 {
+    gap: 1.5rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    html {
+        font-size: 14px !important;
+    }
+
+    .text-3xl {
+        font-size: 1.5rem !important;
+    }
+
+    .text-2xl {
+        font-size: 1.25rem !important;
+    }
+
+    .p-6 {
+        padding: 1rem !important;
+    }
+
+    .px-6 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Mobile-specific improvements */
+    .container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Footer mobile adjustments */
+    footer .grid-cols-3 {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+
+    /* Card spacing on mobile */
+    .card-enhanced, .flat-card, .stat-card {
+        margin-bottom: 1rem !important;
+    }
+
+    /* Button improvements on mobile */
+    .btn-enhanced, .btn-success, .btn-danger {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.875rem !important;
+        min-height: 44px !important; /* Touch target size */
+    }
+
+    /* Form improvements on mobile */
+    input, select, textarea {
+        min-height: 44px !important;
+        font-size: 16px !important; /* Prevent zoom on iOS */
+    }
+
+    /* Navigation improvements on mobile */
+    nav {
+        padding: 0.5rem 1rem !important;
+    }
+
+    /* Table responsiveness */
+    table {
+        font-size: 0.75rem !important;
+    }
+
+    th, td {
+        padding: 0.5rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Mobile-specific flat card optimizations */
+    .flat-stat-item {
+        padding: 0.5rem !important;
+    }
+
+    .flat-stat-item .text-lg {
+        font-size: 0.875rem !important;
+    }
+
+    /* Mobile dashboard stats */
+    .stat-card {
+        padding: 0.75rem !important;
+    }
+
+    .stat-card .text-xl {
+        font-size: 1rem !important;
+    }
+
+    /* Mobile welcome section */
+    .welcome-enhanced {
+        padding: 1rem !important;
+    }
+
+    .welcome-enhanced h1 {
+        font-size: 1.25rem !important;
+    }
+
+    .welcome-enhanced p {
+        font-size: 0.875rem !important;
+    }
+
+    /* Mobile quick actions optimization */
+    .quick-action-mobile {
+        padding: 0.75rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    .quick-action-mobile h4 {
+        font-size: 0.875rem !important;
+    }
+
+    .quick-action-mobile p {
+        font-size: 0.75rem !important;
+    }
+
+    /* Mobile badge optimization */
+    .badge-success, .badge-warning, .badge-danger {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.625rem !important;
+    }
+
+    /* Mobile form optimization */
+    .form-input {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.875rem !important;
+    }
+
+    /* Mobile navigation improvements */
+    .mobile-nav-item {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.875rem !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Prevent any unwanted scaling */
+body, html {
+    -webkit-transform: scale(1) !important;
+    -moz-transform: scale(1) !important;
+    -ms-transform: scale(1) !important;
+    -o-transform: scale(1) !important;
+    transform: scale(1) !important;
+}
+
+/* Fix any potential zoom issues */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    body {
+        zoom: 1 !important;
+    }
+}
+
+/* Ensure proper table sizing */
+table {
+    font-size: 0.875rem !important;
+}
+
+th, td {
+    padding: 0.75rem !important;
+    font-size: 0.875rem !important;
+}
+
+/* Footer sizing */
+footer {
+    font-size: 0.875rem !important;
+}
+
+footer .text-sm {
+    font-size: 0.875rem !important;
+}
+
+/* Additional browser-specific fixes */
+@-moz-document url-prefix() {
+    /* Firefox specific fixes */
+    body {
+        -moz-transform: scale(1) !important;
+    }
+}
+
+/* WebKit/Chrome specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    body {
+        -webkit-transform: scale(1) !important;
+        zoom: 1 !important;
+    }
+}
+
+/* Edge specific fixes */
+@supports (-ms-ime-align: auto) {
+    body {
+        -ms-transform: scale(1) !important;
+        zoom: 1 !important;
+    }
+}
+
+/* Prevent any unwanted text scaling */
+h1, h2, h3, h4, h5, h6 {
+    -webkit-text-size-adjust: 100% !important;
+    -ms-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+}
+
+/* Ensure consistent button sizing */
+button, input[type="button"], input[type="submit"], input[type="reset"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-size: inherit !important;
+}
+
+/* Prevent zoom on form focus (mobile) */
+@media screen and (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+        transform: scale(1) !important;
+    }
+}
+
+/* Force proper scaling on all elements */
+* {
+    -webkit-transform: scale(1) !important;
+    -moz-transform: scale(1) !important;
+    -ms-transform: scale(1) !important;
+    -o-transform: scale(1) !important;
+    transform: scale(1) !important;
+    zoom: 1 !important;
+}
+
+/* Override any hover transforms that might cause issues */
+*:hover {
+    -webkit-transform: scale(1) !important;
+    -moz-transform: scale(1) !important;
+    -ms-transform: scale(1) !important;
+    -o-transform: scale(1) !important;
+}
+
+/* Specific overrides for elements that should have transforms */
+.hover\:scale-105:hover {
+    -webkit-transform: scale(1.05) !important;
+    -moz-transform: scale(1.05) !important;
+    -ms-transform: scale(1.05) !important;
+    -o-transform: scale(1.05) !important;
+    transform: scale(1.05) !important;
+}
+
+/* Allow translateY transforms for hover effects */
+*[class*="hover"]:hover {
+    transform: translateY(-2px) scale(1) !important;
+}

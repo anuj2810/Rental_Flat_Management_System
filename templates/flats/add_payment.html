@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Payment - {{ rent_record.flat.flat_number }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Add Payment</h2>
+        </div>
+
+        <!-- Rent Record Summary -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-blue-800 mb-2">Rent Record Summary</h3>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="font-medium">Flat:</span> {{ rent_record.flat.flat_number }}
+                </div>
+                <div>
+                    <span class="font-medium">Month:</span> {{ rent_record.month|date:"F Y" }}
+                </div>
+                <div>
+                    <span class="font-medium">Monthly Rent:</span> ₹{{ rent_record.monthly_rent }}
+                </div>
+                <div>
+                    <span class="font-medium">Electricity Bill:</span> ₹{{ rent_record.electricity_bill }}
+                </div>
+                <div>
+                    <span class="font-medium">Total Rent:</span> ₹{{ rent_record.total_rent }}
+                </div>
+                <div>
+                    <span class="font-medium">Already Paid:</span> ₹{{ rent_record.total_received }}
+                </div>
+                <div class="col-span-2">
+                    <span class="font-medium">Remaining Amount:</span> 
+                    <span class="text-lg font-bold {% if rent_record.remaining_rent > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                        ₹{{ rent_record.remaining_rent }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {% if rent_record.remaining_rent > 0 %}
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ form.amount_received.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Amount Received *
+                    </label>
+                    {{ form.amount_received }}
+                    {% if form.amount_received.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.amount_received.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.amount_received.help_text %}
+                        <p class="text-gray-500 text-sm mt-1">{{ form.amount_received.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.payment_method.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Payment Method *
+                    </label>
+                    {{ form.payment_method }}
+                    {% if form.payment_method.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.payment_method.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.payment_by.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Payment Made By *
+                    </label>
+                    {{ form.payment_by }}
+                    {% if form.payment_by.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.payment_by.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Notes (Optional)
+                    </label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.notes.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4">
+                    <a href="{% url 'flats:flat_payment_records' rent_record.flat.id %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded">
+                        Cancel
+                    </a>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded">
+                        Record Payment
+                    </button>
+                </div>
+            </form>
+        {% else %}
+            <div class="text-center py-8">
+                <div class="text-green-600 text-lg font-semibold mb-2">✓ Rent Fully Paid</div>
+                <p class="text-gray-600">This rent record has been fully paid. No additional payments needed.</p>
+                <a href="{% url 'flats:flat_payment_records' rent_record.flat.id %}" class="inline-block mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded">
+                    Back to Rent Management
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

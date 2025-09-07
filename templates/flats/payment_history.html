@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment History - {{ rent_record.flat.flat_number }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold">Payment History</h2>
+        <p class="text-gray-600">Flat {{ rent_record.flat.flat_number }} • {{ rent_record.month|date:"F Y" }}</p>
+    </div>
+    
+    <!-- Rent Record Summary -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4">Rent Record Summary</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+                <span class="text-sm text-gray-600">Monthly Rent</span>
+                <p class="font-semibold">₹{{ rent_record.monthly_rent }}</p>
+            </div>
+            <div>
+                <span class="text-sm text-gray-600">Electricity Bill</span>
+                <p class="font-semibold">₹{{ rent_record.electricity_bill }}</p>
+            </div>
+            <div>
+                <span class="text-sm text-gray-600">Total Rent</span>
+                <p class="font-semibold">₹{{ rent_record.total_rent }}</p>
+            </div>
+            <div>
+                <span class="text-sm text-gray-600">Total Received</span>
+                <p class="font-semibold">₹{{ rent_record.total_received }}</p>
+            </div>
+            <div class="md:col-span-2">
+                <span class="text-sm text-gray-600">Remaining Amount</span>
+                <p class="font-semibold {% if rent_record.remaining_rent > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                    ₹{{ rent_record.remaining_rent }}
+                </p>
+            </div>
+            <div class="md:col-span-2">
+                <span class="text-sm text-gray-600">Payment Status</span>
+                <p class="font-semibold">
+                    {% if rent_record.payment_status == 'paid' %}
+                        <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Fully Paid</span>
+                    {% elif rent_record.payment_status == 'partial' %}
+                        <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">Partially Paid</span>
+                    {% else %}
+                        <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">Unpaid</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Duplicate Payment Warnings -->
+    {% if duplicate_warnings %}
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-yellow-800">Duplicate Payment Warning</h3>
+                    <div class="mt-2 text-sm text-yellow-700">
+                        <p>Potential duplicate payments detected:</p>
+                        <ul class="mt-1 list-disc list-inside">
+                            {% for warning in duplicate_warnings %}
+                                <li>₹{{ warning.amount }} on {{ warning.date|date:"d M Y" }} ({{ warning.count }} payments)</li>
+                            {% endfor %}
+                        </ul>
+                        <p class="mt-2">Please review these payments and delete any duplicates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Payment Records -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Payment Records</h3>
+            <div class="space-x-2">
+                {% if duplicate_warnings and user.user_type == 'owner' %}
+                    <a href="{% url 'flats:bulk_delete_payments' rent_record.id %}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded text-sm">
+                        Manage Duplicates
+                    </a>
+                {% endif %}             
+            </div>
+        </div>
+        
+        {% if payments %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Paid By</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
+                            {% if user.user_type == 'owner' %}
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for payment in payments %}
+                        <tr class="hover:bg-gray-50 {% for warning in duplicate_warnings %}{% if payment in warning.payments %}bg-yellow-50{% endif %}{% endfor %}">
+                            <td class="px-4 py-2 text-sm">
+                                {{ payment.payment_date|date:"d/m/Y H:i" }}
+                                {% for warning in duplicate_warnings %}
+                                    {% if payment in warning.payments %}
+                                        <span class="ml-2 bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs">Duplicate</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="px-4 py-2 text-sm font-medium">₹{{ payment.amount_received }}</td>
+                            <td class="px-4 py-2 text-sm">{{ payment.get_payment_method_display }}</td>
+                            <td class="px-4 py-2 text-sm">{{ payment.payment_by }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-600">
+                                {% if payment.notes %}
+                                    {{ payment.notes|truncatechars:30 }}
+                                {% else %}
+                                    <span class="text-gray-400">No notes</span>
+                                {% endif %}
+                            </td>
+                            {% if user.user_type == 'owner' %}
+                                <td class="px-4 py-2 text-sm space-x-2">
+                                    <a href="{% url 'flats:edit_payment' payment.id %}" class="text-blue-600 hover:text-blue-800">Edit</a>
+                                    <a href="{% url 'flats:delete_payment' payment.id %}" class="text-red-600 hover:text-red-800" onclick="return confirm('Are you sure you want to delete this payment?')">Delete</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <p class="text-gray-500">No payment records found for this month.</p>
+                {% if rent_record.remaining_rent > 0 and user.user_type == 'owner' %}
+                    <a href="{% url 'flats:add_payment' rent_record.id %}" class="inline-block mt-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                        Add First Payment
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="mt-6 text-center">
+        <a href="{% url 'flats:flat_payment_records' rent_record.flat.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2">
+            Back to Rent Management
+        </a>
+        <a href="{% url 'accounts:dashboard' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

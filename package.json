@@ -1,0 +1,23 @@
+{
+  "name": "flat-rental-system",
+  "version": "1.0.0",
+  "description": "Django Flat Rental Management System with Tailwind CSS",
+  "main": "index.js",
+  "scripts": {
+    "build-css": "tailwindcss -i ./static/css/input.css -o ./static/css/tailwind.css --watch",
+    "build-css-prod": "tailwindcss -i ./static/css/input.css -o ./static/css/tailwind.css --minify",
+    "dev": "npm run build-css"
+  },
+  "keywords": [
+    "django",
+    "tailwindcss",
+    "rental-management"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "postcss": "^8.4.32",
+    "autoprefixer": "^10.4.16"
+  }
+}
