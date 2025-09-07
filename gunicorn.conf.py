@@ -17,9 +17,7 @@ keepalive = 2
 max_requests = 1000
 max_requests_jitter = 100
 
-# Logging
-accesslog = "logs/gunicorn_access.log"
-errorlog = "logs/gunicorn_error.log"
+
 loglevel = "info"
 
 # Process naming
