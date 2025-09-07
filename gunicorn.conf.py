@@ -17,7 +17,10 @@ keepalive = 2
 max_requests = 1000
 max_requests_jitter = 100
 
-
+# Logs console pe bhejo (Render capture karega)
+errorlog = "-"
+accesslog = "-"
+pidfile = None
 loglevel = "info"
 
 # Process naming
