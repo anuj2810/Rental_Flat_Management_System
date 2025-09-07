@@ -1,38 +1,19 @@
-# Gunicorn configuration file for Flat Rental System
-
+# gunicorn.conf.py
 import multiprocessing
 
-# Server socket
+# bind to all interfaces on port 8000 (Render uses this)
 bind = "0.0.0.0:8000"
-backlog = 2048
 
-# Worker processes
-workers = multiprocessing.cpu_count() * 2 + 1
-worker_class = "sync"
-worker_connections = 1000
-timeout = 30
-keepalive = 2
+# workers: reasonable default using CPU count
+workers = max(2, multiprocessing.cpu_count() * 2 + 1)
 
-# Restart workers after this many requests, to help prevent memory leaks
-max_requests = 1000
-max_requests_jitter = 100
+# request timeout (seconds)
+timeout = 120
 
-# Logs console pe bhejo (Render capture karega)
+# send logs to stdout/stderr so Render captures them
 errorlog = "-"
 accesslog = "-"
-pidfile = None
 loglevel = "info"
 
-# Process naming
-proc_name = "flat_rental_system"
-
-# Server mechanics
-daemon = False
-pidfile = "logs/gunicorn.pid"
-user = None
-group = None
-tmp_upload_dir = None
-
-# SSL (uncomment for HTTPS)
-# keyfile = "/path/to/your/keyfile.key"
-# certfile = "/path/to/your/certfile.crt"
+# don't write a pidfile (avoid 'logs doesn't exist' errors)
+pidfile = None
