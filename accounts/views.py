@@ -6,7 +6,28 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import CustomUserCreationForm, LoginForm, ProfileForm
 from .models import CustomUser
-from flats.models import FlatMember
+from flats.models import FlatMember, Flat, RentRecord, PaymentRecord
+
+def homepage_view(request):
+    """Homepage view with project information and statistics"""
+    # Get some statistics for the homepage
+    total_properties = Flat.objects.count()
+    total_tenants = FlatMember.objects.count()
+    total_rent_records = RentRecord.objects.count()
+    total_payments = PaymentRecord.objects.count()
+
+    # Calculate total rent collected
+    total_rent_collected = sum(payment.amount_received for payment in PaymentRecord.objects.all())
+
+    context = {
+        'total_properties': total_properties,
+        'total_tenants': total_tenants,
+        'total_rent_records': total_rent_records,
+        'total_payments': total_payments,
+        'total_rent_collected': total_rent_collected,
+    }
+
+    return render(request, 'accounts/homepage.html', context)
 
 class SignUpView(CreateView):
     model = CustomUser

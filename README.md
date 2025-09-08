@@ -124,24 +124,35 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-## 🚀 Production Deployment
+## 🚀 Railway Deployment
 
-### **Quick Deploy**
-```bash
-# Windows
-deploy.bat
+### **Quick Deploy Steps:**
+1. **Push to GitHub:**
+   ```bash
+   git init
+   git add .
+   git commit -m "Deploy to Railway"
+   git remote add origin https://github.com/YOUR_USERNAME/flat-rental-system.git
+   git push -u origin main
+   ```
 
-# Linux/macOS
-./deploy.sh
-```
+2. **Deploy on Railway:**
+   - Go to [railway.app](https://railway.app)
+   - Sign up with GitHub
+   - Click "New Project" → "Deploy from GitHub repo"
+   - Select your repository
+   - Railway will automatically build and deploy!
 
-### **Docker Deployment**
-```bash
-docker-compose up -d
-```
+3. **Set Environment Variables:**
+   ```
+   DEBUG=False
+   SECRET_KEY=your-super-secret-key-here
+   ```
 
-### **Manual Production Setup**
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed production deployment instructions.
+4. **Your app will be live at:** `https://your-app.up.railway.app`
+
+### **One-Click Deploy**
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
 
 ## 📋 Requirements
 

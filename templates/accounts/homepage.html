@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome to Flat Rental Management System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-50 mt-4 dark:from-gray-900 dark:via-gray-800 dark:to-black -mx-4 lg:-mx-6 -mt-6">
+    <!-- Hero Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-4">
+        <div class="flex flex-col md:flex-row items-center gap-8 ">
+            <!-- Left Side - Image -->
+            <div class="w-full md:w-1/2 ">
+                <img src="{% static 'images/building - Copy.png' %}" alt="Building Management" class="w-64 h-64 mx-auto rounded-2xl">
+            </div>
+
+            <!-- Right Side - Summary Content -->
+            <div class="w-full md:w-1/2">
+                <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    Modern <span class="text-blue-600">Rental Management</span> Made Simple
+                </h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300 mb-6">
+                    Streamline your property management with our comprehensive flat rental system.
+                    Track tenants, manage payments, and monitor your properties all in one place.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{% url 'accounts:signup' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+                        Get Started Free
+                    </a>
+                    <a href="#features" class="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Section -->
+<div class="bg-white dark:bg-gray-900 py-16 -mx-4 lg:-mx-6 mt-4 rounded-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Trusted by Property Owners</h2>
+            <p class="text-gray-600 dark:text-gray-300">See how our platform is making a difference</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-600 mb-2 stat-number">{{ total_properties }}</div>
+                <div class="text-gray-600 dark:text-gray-300">Properties Managed</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-green-600 mb-2 stat-number">{{ total_tenants }}</div>
+                <div class="text-gray-600 dark:text-gray-300">Happy Tenants</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-purple-600 mb-2 stat-number">{{ total_payments }}</div>
+                <div class="text-gray-600 dark:text-gray-300">Payments Processed</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-orange-600 mb-2 stat-number">₹{{ total_rent_collected|floatformat:0 }}</div>
+                <div class="text-gray-600 dark:text-gray-300">Total Collected</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div id="features" class="bg-gray-50 dark:bg-gray-800 py-20 -mx-4 lg:-mx-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4 mt-4">Everything You Need</h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 mb-4">Comprehensive tools for modern property management</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Property Management -->
+            <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Property Management</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Easily add, edit, and manage your rental properties with detailed information and floor plans.</p>
+                <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                    <li>• Multiple property support</li>
+                    <li>• Floor and unit management</li>
+                    <li>• Property details tracking</li>
+                </ul>
+            </div>
+
+            <!-- Tenant Management -->
+            <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Tenant Management</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Comprehensive tenant profiles with document management and contact information.</p>
+                <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                    <li>• Complete tenant profiles</li>
+                    <li>• Document storage (Aadhar, PAN)</li>
+                    <li>• Contact management</li>
+                </ul>
+            </div>
+
+            <!-- Payment Tracking -->
+            <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-6">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Payment Tracking</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Track rent payments, electricity bills, and generate comprehensive payment reports.</p>
+                <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                    <li>• Monthly rent tracking</li>
+                    <li>• Electricity bill management</li>
+                    <li>• Payment history & reports</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="bg-white dark:bg-gray-900 py-20 -mx-4 lg:-mx-6 m-8 rounded-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4 p-1">How It Works</h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300">Get started in just a few simple steps</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="text-2xl font-bold text-blue-600">1</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Sign Up</h3>
+                <p class="text-gray-600 dark:text-gray-300">Create your account as a property owner and set up your profile.</p>
+            </div>
+
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="text-2xl font-bold text-green-600">2</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Add Properties</h3>
+                <p class="text-gray-600 dark:text-gray-300">Add your rental properties and tenant information to the system.</p>
+            </div>
+
+            <div class="text-center">
+                <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="text-2xl font-bold text-purple-600">3</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Manage & Track</h3>
+                <p class="text-gray-600 dark:text-gray-300">Track payments, manage tenants, and generate reports effortlessly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="bg-gradient-to-r from-blue-600 to-purple-600 py-16 mt-4 m-4 lg:-mx-6 rounded-2xl ">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-white mb-4">Ready to Get Started?</h2>
+        <p class="text-xl text-blue-100 mb-8">Join thousands of property owners who trust our platform</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'accounts:signup' %}" class="bg-white text-blue-600 p-2 hover:bg-gray-100 px-8 py-3 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg">
+                Start Free Trial
+            </a>
+            <a href="{% url 'accounts:login' %}" class="bg-white text-blue-600 p-2 hover:bg-gray-100 px-8 py-3 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg">
+                Login to Account
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="{% static 'js/homepage.js' %}"></script>
+{% endblock %}

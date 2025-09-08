@@ -25,7 +25,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('flats/', include('flats.urls')),
     path('rents/', include('rents.urls')),
-    path('', lambda request: redirect('accounts:login')),
+    path('', lambda request: redirect('accounts:homepage')),
 ]
 
 if settings.DEBUG:
