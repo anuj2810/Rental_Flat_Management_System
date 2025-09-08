@@ -25,7 +25,7 @@ def add_flat(request):
             flat.owner = request.user  # Set the current owner
             flat.save()
             messages.success(request, 'Flat added successfully!')
-            return redirect('flats:flats_list')
+            return redirect('flats:manage_flats')
     else:
         form = FlatForm()
     
