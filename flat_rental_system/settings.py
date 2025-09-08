@@ -45,12 +45,17 @@ INSTALLED_APPS = [
     'rents',
 ]
 
+# Add storages only if using cloud storage
+USE_S3 = os.environ.get('USE_S3', 'False').lower() == 'true'
+if USE_S3:
+    INSTALLED_APPS.append('storages')
+
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this for static files
+    'flat_rental_system.whitenoise_config.WhiteNoiseMediaMiddleware',  # Custom WhiteNoise for media files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -143,9 +148,38 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # Whitenoise settings for static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
+# Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Cloud Storage Configuration (AWS S3 or compatible)
+if USE_S3:
+    # AWS S3 settings
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'us-east-1')
+
+    # Only configure S3 if all required settings are present
+    if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and AWS_STORAGE_BUCKET_NAME:
+        AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+        AWS_DEFAULT_ACL = 'public-read'
+        AWS_S3_OBJECT_PARAMETERS = {
+            'CacheControl': 'max-age=86400',
+        }
+
+        # Use S3 for media files
+        DEFAULT_FILE_STORAGE = 'flat_rental_system.storage_backends.MediaStorage'
+        MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+    else:
+        print("Warning: S3 enabled but credentials missing. Using local storage.")
+        USE_S3 = False
+
+if not USE_S3:
+    # Local storage (development and fallback)
+    import os
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
+    os.makedirs(MEDIA_ROOT / 'profiles', exist_ok=True)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

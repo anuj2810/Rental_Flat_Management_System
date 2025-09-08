@@ -193,7 +193,7 @@ def manage_rent(request, flat_id):
             rent_record.flat = flat
             rent_record.save()
             messages.success(request, 'Rent record saved successfully!')
-            return redirect('flats:manage_rent', flat_id=flat.id)
+            return redirect('flats:flat_payment_records', flat_id=flat.id)
     else:
         form = RentRecordForm(initial={'monthly_rent': flat.monthly_rent}, flat_id=flat_id)
     

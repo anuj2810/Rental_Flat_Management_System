@@ -8,7 +8,7 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-800">Update Member Details</h1>
             <div>
-                <a href="{% url 'flats:view_member_detail' member.id %}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded">
+                <a href="{% url 'flats:flat_detail' flat.id %}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded">
                     Cancel
                 </a>
             </div>
@@ -65,7 +65,22 @@
             
             <div class="bg-gray-50 p-4 rounded-lg">
                 <h2 class="text-xl font-semibold mb-4 text-gray-700">Documents</h2>
-                
+
+                <!-- Warning Message for Document Uploads -->
+                <div class="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-md">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-orange-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-orange-800 font-medium">⚠️ Important Notice</p>
+                            <p class="text-xs text-orange-700 mt-1">
+                                Uploaded documents may be temporarily lost during system updates. All member information and records will always be safe.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-group">
                         <label for="{{ form.aadhar_document.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Aadhar Document</label>

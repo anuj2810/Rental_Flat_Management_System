@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from django.http import JsonResponse
 from .forms import CustomUserCreationForm, LoginForm, ProfileForm
 from .models import CustomUser
 from flats.models import FlatMember, Flat, RentRecord, PaymentRecord
@@ -87,3 +88,28 @@ def profile_view(request):
     else:
         form = ProfileForm(instance=request.user)
     return render(request, 'accounts/profile.html', {'form': form})
+
+
+def media_debug_view(request):
+    """Debug view to check media file serving"""
+    from django.conf import settings
+    import os
+
+    media_info = {
+        'MEDIA_URL': settings.MEDIA_URL,
+        'MEDIA_ROOT': str(settings.MEDIA_ROOT),
+        'media_root_exists': os.path.exists(settings.MEDIA_ROOT),
+        'profiles_dir_exists': os.path.exists(os.path.join(settings.MEDIA_ROOT, 'profiles')),
+        'debug_mode': settings.DEBUG,
+    }
+
+    # List files in media directory
+    if os.path.exists(settings.MEDIA_ROOT):
+        media_files = []
+        for root, dirs, files in os.walk(settings.MEDIA_ROOT):
+            for file in files:
+                rel_path = os.path.relpath(os.path.join(root, file), settings.MEDIA_ROOT)
+                media_files.append(rel_path)
+        media_info['media_files'] = media_files
+
+    return JsonResponse(media_info)

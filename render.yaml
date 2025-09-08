@@ -2,7 +2,7 @@ services:
   - type: web
     name: flat-rental-system
     env: python
-    buildCommand: "pip install -r requirements.txt && npm install && npm run build-css-prod && python manage.py collectstatic --noinput && python manage.py migrate"
+    buildCommand: "pip install -r requirements.txt && npm install && npm run build-css-prod && mkdir -p media/profiles media/documents/aadhar media/documents/pan media/documents/other && python manage.py collectstatic --noinput && python manage.py migrate"
     startCommand: "gunicorn flat_rental_system.wsgi:application"
     envVars:
       - key: DEBUG
@@ -11,3 +11,14 @@ services:
         generateValue: true
       - key: WEB_CONCURRENCY
         value: 4
+      # Cloud Storage Settings (Optional - set these if using S3)
+      - key: USE_S3
+        value: False  # Set to True when you configure S3
+      # - key: AWS_ACCESS_KEY_ID
+      #   value: your-aws-access-key
+      # - key: AWS_SECRET_ACCESS_KEY
+      #   value: your-aws-secret-key
+      # - key: AWS_STORAGE_BUCKET_NAME
+      #   value: your-bucket-name
+      # - key: AWS_S3_REGION_NAME
+      #   value: us-east-1
