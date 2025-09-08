@@ -124,35 +124,34 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-## 🚀 Railway Deployment
+## 🚀 Render Deployment
 
 ### **Quick Deploy Steps:**
 1. **Push to GitHub:**
    ```bash
    git init
    git add .
-   git commit -m "Deploy to Railway"
+   git commit -m "Deploy to Render"
    git remote add origin https://github.com/YOUR_USERNAME/flat-rental-system.git
    git push -u origin main
    ```
 
-2. **Deploy on Railway:**
-   - Go to [railway.app](https://railway.app)
+2. **Deploy on Render:**
+   - Go to [render.com](https://render.com)
    - Sign up with GitHub
-   - Click "New Project" → "Deploy from GitHub repo"
-   - Select your repository
-   - Railway will automatically build and deploy!
+   - Click "New" → "Web Service"
+   - Connect your GitHub repository
+   - Render will automatically build and deploy!
 
-3. **Set Environment Variables:**
-   ```
-   DEBUG=False
-   SECRET_KEY=your-super-secret-key-here
-   ```
+3. **Configuration:**
+   - Build Command: `./build.sh`
+   - Start Command: `gunicorn flat_rental_system.wsgi:application`
+   - Environment: `Python 3`
 
-4. **Your app will be live at:** `https://your-app.up.railway.app`
+4. **Your app will be live at:** `https://your-app-name.onrender.com`
 
 ### **One-Click Deploy**
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
 ## 📋 Requirements
 
