@@ -1,4 +1,12 @@
 services:
+  # PostgreSQL Database Service
+  - type: pserv
+    name: flat-rental-db
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.postgres
+
+  # Web Application Service
   - type: web
     name: flat-rental-system
     env: python
@@ -11,6 +19,11 @@ services:
         generateValue: true
       - key: WEB_CONCURRENCY
         value: 4
+      # PostgreSQL Database Connection
+      - key: DATABASE_URL
+        fromDatabase:
+          name: flat-rental-db
+          property: connectionString
       # Cloud Storage Settings (Optional - set these if using S3)
       - key: USE_S3
         value: False  # Set to True when you configure S3
@@ -22,3 +35,8 @@ services:
       #   value: your-bucket-name
       # - key: AWS_S3_REGION_NAME
       #   value: us-east-1
+
+databases:
+  - name: flat-rental-db
+    databaseName: flat_rental_system
+    user: flat_rental_user

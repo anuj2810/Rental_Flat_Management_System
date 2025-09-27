@@ -10,10 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+try:
+    from dotenv import load_dotenv
+except Exception:
+    load_dotenv = None
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env for local development if available
+if load_dotenv is not None:
+    try:
+        load_dotenv(BASE_DIR / '.env')
+    except Exception:
+        pass
 
 
 # Quick-start development settings - unsuitable for production
@@ -89,20 +100,52 @@ WSGI_APPLICATION = 'flat_rental_system.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-import dj_database_url
+from urllib.parse import urlparse
 
-# Database configuration
-if os.environ.get('DATABASE_URL'):
-    # Production database (PostgreSQL on Render)
-    DATABASES = {
-        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
-    }
+# Database configuration: default to PostgreSQL, optionally via DATABASE_URL
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    # Prefer dj_database_url if available; otherwise, parse manually
+    try:
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.parse(
+                DATABASE_URL,
+                conn_max_age=600,
+                ssl_require=os.environ.get('DB_SSL_REQUIRE', 'True').lower() == 'true'
+            )
+        }
+    except Exception:
+        parsed = urlparse(DATABASE_URL)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': (parsed.path or '/flat_rental_system').lstrip('/'),
+                'USER': parsed.username or os.environ.get('POSTGRES_USER', 'postgres'),
+                'PASSWORD': parsed.password or os.environ.get('POSTGRES_PASSWORD', ''),
+                'HOST': parsed.hostname or os.environ.get('POSTGRES_HOST', 'localhost'),
+                'PORT': str(parsed.port or os.environ.get('POSTGRES_PORT', '5432')),
+                'CONN_MAX_AGE': 600,
+                'OPTIONS': {
+                    'sslmode': 'require' if os.environ.get('DB_SSL_REQUIRE', 'True').lower() == 'true' else 'prefer'
+                }
+            }
+        }
 else:
-    # Development database (SQLite)
+    # Local PostgreSQL configuration (used when DATABASE_URL is not set)
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'flat_rental_system'),
+            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+            'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+            'CONN_MAX_AGE': 600,
+            'OPTIONS': {
+                'sslmode': 'require' if os.environ.get('DB_SSL_REQUIRE', 'False').lower() == 'true' else 'prefer'
+            }
         }
     }
 
