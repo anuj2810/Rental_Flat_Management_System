@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+from django.core.exceptions import ImproperlyConfigured
 try:
     from dotenv import load_dotenv
 except Exception:
@@ -133,7 +134,12 @@ if DATABASE_URL:
             }
         }
 else:
-    # Local PostgreSQL configuration (used when DATABASE_URL is not set)
+    # If DATABASE_URL is not set: require it in production, allow local dev config otherwise
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            "DATABASE_URL must be set in production. Your app is trying to connect to localhost, which doesn't exist on Render."
+        )
+    # Local PostgreSQL configuration for development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
