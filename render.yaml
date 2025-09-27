@@ -10,8 +10,8 @@ services:
   - type: web
     name: flat-rental-system
     env: python
-    buildCommand: "pip install -r requirements.txt && npm install && npm run build-css-prod && mkdir -p media/profiles media/documents/aadhar media/documents/pan media/documents/other && python manage.py collectstatic --noinput && python manage.py migrate"
-    startCommand: "gunicorn flat_rental_system.wsgi:application"
+    buildCommand: "pip install -r requirements.txt && npm install && npm run build-css-prod && mkdir -p media/profiles media/documents/aadhar media/documents/pan media/documents/other && python manage.py collectstatic --noinput"
+    startCommand: "python manage.py migrate && gunicorn flat_rental_system.wsgi:application"
     envVars:
       - key: DEBUG
         value: False
