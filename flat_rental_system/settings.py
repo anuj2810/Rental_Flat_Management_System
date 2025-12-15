@@ -105,69 +105,76 @@ WSGI_APPLICATION = 'flat_rental_system.wsgi.application'
 from urllib.parse import urlparse
 
 # Database configuration: default to PostgreSQL, optionally via DATABASE_URL
-DATABASE_URL = os.environ.get('DATABASE_URL')
+# DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DATABASE_URL:
-    # Prefer dj_database_url if available; otherwise, parse manually
-    try:
-        import dj_database_url
-        DATABASES = {
-            'default': dj_database_url.parse(
-                DATABASE_URL,
-                conn_max_age=600,
-                ssl_require=os.environ.get('DB_SSL_REQUIRE', 'True').lower() == 'true'
-            )
-        }
-    except Exception:
-        parsed = urlparse(DATABASE_URL)
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': (parsed.path or '/flat_rental_system').lstrip('/'),
-                'USER': parsed.username or os.environ.get('POSTGRES_USER', 'postgres'),
-                'PASSWORD': parsed.password or os.environ.get('POSTGRES_PASSWORD', ''),
-                'HOST': parsed.hostname or os.environ.get('POSTGRES_HOST', 'localhost'),
-                'PORT': str(parsed.port or os.environ.get('POSTGRES_PORT', '5432')),
-                'CONN_MAX_AGE': 600,
-                'OPTIONS': {
-                    'sslmode': 'require' if os.environ.get('DB_SSL_REQUIRE', 'True').lower() == 'true' else 'prefer'
-                }
-            }
-        }
-else:
-    # If DATABASE_URL is not set: require it in production, but allow certain management commands
-    if not DEBUG:
-        cmd = (sys.argv[1].lower() if len(sys.argv) > 1 else '')
-        allow_no_db = cmd in ('collectstatic', 'check')
-        if not DATABASE_URL and not allow_no_db:
-            raise ImproperlyConfigured(
-                "DATABASE_URL must be set in production. Your app is trying to connect to localhost, which doesn't exist on Render."
-            )
-        # Allow collectstatic/check to run during build without a DB connection
-        if allow_no_db:
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': BASE_DIR / 'db.sqlite3'
-                }
-            }
-    else:
-        # Local PostgreSQL configuration for development
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': os.environ.get('POSTGRES_DB', 'flat_rental_system'),
-                'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-                'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
-                'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-                'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-                'CONN_MAX_AGE': 600,
-                'OPTIONS': {
-                    'sslmode': 'require' if os.environ.get('DB_SSL_REQUIRE', 'False').lower() == 'true' else 'prefer'
-                }
-            }
-        }
+# if DATABASE_URL:
+#     # Prefer dj_database_url if available; otherwise, parse manually
+#     try:
+#         import dj_database_url
+#         DATABASES = {
+#             'default': dj_database_url.parse(
+#                 DATABASE_URL,
+#                 conn_max_age=600,
+#                 ssl_require=os.environ.get('DB_SSL_REQUIRE', 'True').lower() == 'true'
+#             )
+#         }
+#     except Exception:
+#         parsed = urlparse(DATABASE_URL)
+#         DATABASES = {
+#             'default': {
+#                 'ENGINE': 'django.db.backends.postgresql',
+#                 'NAME': (parsed.path or '/flat_rental_system').lstrip('/'),
+#                 'USER': parsed.username or os.environ.get('POSTGRES_USER', 'postgres'),
+#                 'PASSWORD': parsed.password or os.environ.get('POSTGRES_PASSWORD', ''),
+#                 'HOST': parsed.hostname or os.environ.get('POSTGRES_HOST', 'localhost'),
+#                 'PORT': str(parsed.port or os.environ.get('POSTGRES_PORT', '5432')),
+#                 'CONN_MAX_AGE': 600,
+#                 'OPTIONS': {
+#                     'sslmode': 'require' if os.environ.get('DB_SSL_REQUIRE', 'True').lower() == 'true' else 'prefer'
+#                 }
+#             }
+#         }
+# else:
+#     # If DATABASE_URL is not set: require it in production, but allow certain management commands
+#     if not DEBUG:
+#         cmd = (sys.argv[1].lower() if len(sys.argv) > 1 else '')
+#         allow_no_db = cmd in ('collectstatic', 'check')
+#         if not DATABASE_URL and not allow_no_db:
+#             raise ImproperlyConfigured(
+#                 "DATABASE_URL must be set in production. Your app is trying to connect to localhost, which doesn't exist on Render."
+#             )
+#         # Allow collectstatic/check to run during build without a DB connection
+#         if allow_no_db:
+#             DATABASES = {
+#                 'default': {
+#                     'ENGINE': 'django.db.backends.sqlite3',
+#                     'NAME': BASE_DIR / 'db.sqlite3'
+#                 }
+#             }
+#     else:
+#         # Local PostgreSQL configuration for development
+#         DATABASES = {
+#             'default': {
+#                 'ENGINE': 'django.db.backends.postgresql',
+#                 'NAME': os.environ.get('POSTGRES_DB', 'flat_rental_system'),
+#                 'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+#                 'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+#                 'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+#                 'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+#                 'CONN_MAX_AGE': 600,
+#                 'OPTIONS': {
+#                     'sslmode': 'require' if os.environ.get('DB_SSL_REQUIRE', 'False').lower() == 'true' else 'prefer'
+#                 }
+#             }
+#         }
 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
